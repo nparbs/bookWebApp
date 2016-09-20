@@ -19,10 +19,6 @@ public class AuthorService {
     private List<Author> authorList;
     
     public AuthorService() {
-    }
-    
-    public final List<Author> getAuthorList() {
-        
         authorList = new ArrayList<>();
         
         Author a1 = new Author(001);
@@ -39,7 +35,9 @@ public class AuthorService {
         a3.setAuthorName("Joe Smith");
         a3.setDateAdded(Date.valueOf(LocalDate.now()));
         authorList.add(a3);
-        
+    }
+    
+    public final List<Author> getAuthorList() {   
         return authorList;
     }
     
