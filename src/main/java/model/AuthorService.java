@@ -6,6 +6,7 @@
 package model;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,38 +16,32 @@ import java.util.List;
  * @author Nick
  */
 public class AuthorService {
-    
-    private List<Author> authorList;
-    
-    public AuthorService() {
-        authorList = new ArrayList<>();
-        
-        Author a1 = new Author(001);
-        a1.setAuthorName("Antonio Goncalves");
-        a1.setDateAdded(Date.valueOf(LocalDate.now()));
-        authorList.add(a1);
-        
-        Author a2 = new Author(002);
-        a2.setAuthorName("John Adams");
-        a2.setDateAdded(Date.valueOf(LocalDate.now()));
-        authorList.add(a2);
-        
-        Author a3 = new Author(003);
-        a3.setAuthorName("Joe Smith");
-        a3.setDateAdded(Date.valueOf(LocalDate.now()));
-        authorList.add(a3);
-    }
-    
-    public final List<Author> getAuthorList() {   
-        return authorList;
-    }
-    
-    
+    private AuthorDaoStrategy dao;
 
-    @Override
-    public String toString() {
-        return "AuthorService{" + "authorList=" + authorList + '}';
+    public AuthorService(AuthorDaoStrategy dao) {
+        this.dao = dao;
+    }
+
+    public final List<Author> getAuthorList() throws SQLException, Exception{   
+        return dao.getAuthorList();
     }
     
+    public final void deleteAuthor(int id) throws SQLException, Exception{
+        dao.deleteAuthor(id);
+    }
+    
+    public final void createAuthor(String name) throws SQLException, Exception{
+        dao.createAuthor(name);
+    }
+    
+    public static void main(String[] args) throws Exception {
+        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver", 
+                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
+        
+        AuthorService service = new AuthorService(dao);
+        dao.createAuthor("jeff");
+        List<Author> authors = service.getAuthorList();
+        System.out.println(authors);
+    }
     
 }

@@ -23,6 +23,12 @@ public class Author {
         this.authorId = authorId;
     }
 
+    public Author(int authorId, String authorName, Date dateAdded) {
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.dateAdded = dateAdded;
+    }
+
     public Author() {
     }
     
