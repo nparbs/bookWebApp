@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.njp.model;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,9 +19,14 @@ public interface DbStrategy {
 
     List<Map<String,Object>> findAllRecords(String tableName, int maxRecords) throws SQLException;
     
+    Map<String, Object> findRecordByPk(String tableName, String pkName, Object primaryKey) throws SQLException;
+    
     void createRecord(String tableName, List<String> colNames, List<Object> colVals) throws SQLException;
     
-    void deleteRecord(String tableName, String primaryKeyName, int primaryKey) throws SQLException;
+    void updateRecord(String tableName, List<String> colNames, List<Object> colVals, String primaryKeyName, Object primaryKey) throws SQLException;
+    
+    
+    void deleteRecord(String tableName, String primaryKeyName, Object primaryKey) throws SQLException;
 
     void openConnection(String driverClass, String url, String userName, String password) throws ClassNotFoundException, Exception;
     

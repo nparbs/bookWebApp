@@ -10,10 +10,7 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <%
-    Object obj = request.getAttribute("authorList");
-    if (obj == null) {
-        response.sendRedirect("AuthorController");
-    }
+    Object author = request.getAttribute("author");
 %>
 <html>
     <head>
@@ -24,7 +21,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>All Authors</h1>
+            <h1>Edit Author</h1>
 
             <table class="table table-striped table-hover">
                 <tr>
@@ -33,36 +30,29 @@
                     <th>Author Name</th>
                     <th>Date Added</th>
                     <th></th>
-                    <th></th>
                 </tr>
-                
-                    <c:forEach var="author" items="${authorList}">
-                        <tr>
-                            <td>${author.authorId}</td>
-                            <td>${author.authorName}</td>
-                            <td>${author.dateAdded}</td>
-                            <td>
-                                <form action="DeleteAuthor" method="post">
-                                    <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="EditAuthor" method="post">
-                                    <button class="btn btn-info" name="id" type="submit" value=${author.authorId}>Edit</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                  
+                <form action="EditAuthor" method="post">
+                    <tr>
+                        <td>${author.authorId}</td>
+                        <td><input type="text" name="name" value="${author.authorName}" /></td>
+                        <td>${author.dateAdded}</td>
+                        <td>
+                            <form action="EditAuthor" method="post">
+                                <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </form>   
             </table>
+            </br>
             <h4>Add Author</h4>
             <form class="" action="CreateAuthor" method="post">
                 <div class="form-group">
-                Name:<input type="text" name="name"/>
+                    Name:<input type="text" name="name"/>
                 </div>
                 <button class="btn btn-success" type="submit">Add New Author</button>
             </form>
-            
+
             <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
 
         </div>

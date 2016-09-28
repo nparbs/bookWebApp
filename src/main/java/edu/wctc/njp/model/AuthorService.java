@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package edu.wctc.njp.model;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -26,12 +26,20 @@ public class AuthorService {
         return dao.getAuthorList();
     }
     
-    public final void deleteAuthor(int id) throws SQLException, Exception{
-        dao.deleteAuthor(id);
+    public final void deleteAuthor(String id) throws SQLException, Exception{
+        dao.deleteAuthorById(id);
     }
     
     public final void createAuthor(String name) throws SQLException, Exception{
         dao.createAuthor(name);
+    }
+    
+    public final void updateAuthor(String id, String name) throws Exception {
+        dao.updateAuthor(id, name);
+    }
+    
+    public final Author findAuthorById(String id) throws Exception{
+        return dao.findAuthorByPk(id);
     }
     
     public static void main(String[] args) throws Exception {

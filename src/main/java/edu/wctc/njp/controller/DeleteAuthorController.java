@@ -3,31 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package edu.wctc.njp.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Author;
-import model.AuthorDao;
-import model.AuthorDaoStrategy;
-import model.AuthorService;
-import model.MySqlDbStrategy;
+import edu.wctc.njp.model.Author;
+import edu.wctc.njp.model.AuthorDao;
+import edu.wctc.njp.model.AuthorDaoStrategy;
+import edu.wctc.njp.model.AuthorService;
+import edu.wctc.njp.model.MySqlDbStrategy;
 
 /**
  *
  * @author Nick
  */
-@WebServlet(name = "AuthorController", urlPatterns = {"/AuthorController"})
-public class AuthorController extends HttpServlet {
+@WebServlet(name = "DeleteAuthorController", urlPatterns = {"/DeleteAuthor"})
+public class DeleteAuthorController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,22 +37,26 @@ public class AuthorController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver", 
+
+        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
-        
+
         AuthorService svc = new AuthorService(dao);
         try {
-        List<Author> authorList = svc.getAuthorList();
-        request.setAttribute("authorList", authorList);
-       
-        } catch(Exception e) {
-            
+
+            String id = request.getParameter("id");
+
+            svc.deleteAuthor(id);
+
+            //request.setAttribute("id", id);
+        } catch (Exception e) {
+
         }
         RequestDispatcher view = request.getRequestDispatcher("viewAuthors.jsp");
         view.forward(request, response);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -69,11 +71,7 @@ public class AuthorController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (Exception ex) {
-            Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -87,11 +85,7 @@ public class AuthorController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (Exception ex) {
-            Logger.getLogger(AuthorController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -103,7 +97,5 @@ public class AuthorController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-    
 
 }

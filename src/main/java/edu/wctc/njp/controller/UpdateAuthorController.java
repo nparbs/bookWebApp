@@ -3,29 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package edu.wctc.njp.controller;
 
+import edu.wctc.njp.model.Author;
+import edu.wctc.njp.model.AuthorDao;
+import edu.wctc.njp.model.AuthorDaoStrategy;
+import edu.wctc.njp.model.AuthorService;
+import edu.wctc.njp.model.MySqlDbStrategy;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Author;
-import model.AuthorDao;
-import model.AuthorDaoStrategy;
-import model.AuthorService;
-import model.MySqlDbStrategy;
 
 /**
  *
  * @author Nick
  */
-@WebServlet(name = "DeleteAuthorController", urlPatterns = {"/DeleteAuthor"})
-public class DeleteAuthorController extends HttpServlet {
+@WebServlet(name = "UpdateAuthor", urlPatterns = {"/EditAuthor"})
+public class UpdateAuthorController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,22 +38,30 @@ public class DeleteAuthorController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
+        
         AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
 
         AuthorService svc = new AuthorService(dao);
         try {
+            String id = request.getParameter("id");
+            
+            String name = request.getParameter("name");
+            
+            if (name != null) {
+                 svc.updateAuthor(id, name);
+            }
+            
+            Author author = svc.findAuthorById(id);
 
-            int id = Integer.parseInt(request.getParameter("id"));
-
-            svc.deleteAuthor(id);
-
-            //request.setAttribute("id", id);
+            request.setAttribute("author", author);
+            
+            
+            
         } catch (Exception e) {
 
         }
-        RequestDispatcher view = request.getRequestDispatcher("viewAuthors.jsp");
+        RequestDispatcher view = request.getRequestDispatcher("editAuthor.jsp");
         view.forward(request, response);
 
     }
