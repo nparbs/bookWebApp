@@ -31,7 +31,7 @@ public class MySqlDbStrategy implements DbStrategy {
     @Override
     public void openConnection(String driverClassName, String url, String username, String password)
             throws IllegalArgumentException, ClassNotFoundException, SQLException {
-        String msg = "Error: url is null or zero length!";
+        String msg = "Error: url is null or zero length";
         if (url == null || url.length() == 0) {
             throw new IllegalArgumentException(msg);
         }

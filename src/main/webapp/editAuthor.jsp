@@ -34,11 +34,11 @@
                 </tr>               
                 <tr>
                 <form action="AuthorController?task=Edit" method="post">
-                    <td name="id">${author.authorId}</td>
+                    <td>${author.authorId}</td>
                     <td><input type="text" name="name" value="${author.authorName}" /></td>
                     <td><input type="text" name="date" value="${author.dateAdded}" /></td>
                     <td>
-                        <button class="btn btn-warning" type="submit">Confirm Edit</button>
+                        <button class="btn btn-warning" name="id" value="${author.authorId}"  type="submit">Confirm Edit</button>
                     </td>
                 </form> 
                 <td>
