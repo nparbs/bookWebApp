@@ -5,53 +5,65 @@
  */
 package edu.wctc.njp.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 /**
  *
  * @author Nick
  */
-public class AuthorService {
-    private final AuthorDaoStrategy dao;
+@SessionScoped
+public class AuthorService implements Serializable{
+    
+    @Inject
+    private AuthorDaoStrategy dao;
 
-    public AuthorService(AuthorDaoStrategy dao) {
-        this.dao = dao;
+    public AuthorService() {
+
     }
 
-    public final List<Author> getAuthorList() throws SQLException, Exception{   
+    public List<Author> getAuthorList() throws SQLException, Exception{   
         return dao.getAuthorList();
     }
     
-    public final void deleteAuthor(String id) throws SQLException, Exception{
+    public void deleteAuthor(String id) throws SQLException, Exception{
         dao.deleteAuthorById(id);
     }
     
-    public final void createAuthor(String name) throws SQLException, Exception{
+    public void createAuthor(String name) throws SQLException, Exception{
         dao.createAuthor(name);
     }
     
-    public final void updateAuthor(String id, String name) throws Exception {
+    public void updateAuthor(String id, String name) throws Exception {
         dao.updateAuthor(id, name);
     }
     
-    public final Author findAuthorById(String id) throws Exception{
+    public Author findAuthorById(String id) throws Exception{
         return dao.findAuthorByPk(id);
     }
-    
-    public static void main(String[] args) throws Exception {
-        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver", 
-                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
-        
-        AuthorService service = new AuthorService(dao);
-        //dao.createAuthor("jeff");
-        
-        service.updateAuthor("25", "work plz");
-        List<Author> authors = service.getAuthorList();
-        System.out.println(authors);
+    //
+    //
+    //
+//    public static void main(String[] args) throws Exception {
+//        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver", 
+//                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
+//        
+//        AuthorService service = new AuthorService(dao);
+//        //dao.createAuthor("jeff");
+//        
+//        service.updateAuthor("25", "work plz");
+//        List<Author> authors = service.getAuthorList();
+//        System.out.println(authors);
+//    }
+
+    public AuthorDaoStrategy getDao() {
+        return dao;
     }
     
 }

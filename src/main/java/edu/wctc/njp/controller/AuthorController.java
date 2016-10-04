@@ -20,7 +20,9 @@ import edu.wctc.njp.model.Author;
 import edu.wctc.njp.model.AuthorDao;
 import edu.wctc.njp.model.AuthorDaoStrategy;
 import edu.wctc.njp.model.AuthorService;
+import edu.wctc.njp.model.DbStrategy;
 import edu.wctc.njp.model.MySqlDbStrategy;
+import javax.inject.Inject;
 
 /**
  *
@@ -29,10 +31,22 @@ import edu.wctc.njp.model.MySqlDbStrategy;
 @WebServlet(name = "AuthorController", urlPatterns = {"/AuthorController"})
 public class AuthorController extends HttpServlet {
 
-    private static final String DEST_PAGE = "viewAuthors.jsp";
+    private static final String VIEW_ALL_PAGE = "viewAuthors.jsp";
     private static final String EDIT_PAGE = "editAuthor.jsp";
     private static final String FIND_PAGE = "findAuthor.jsp";
-    private static final long serialVersionUID = 1L;
+
+    private DbStrategy db;
+    private String driverClass;
+    private String url;
+    private String userName;
+    private String password;
+    
+    @Inject
+    private AuthorService authSvc;
+    
+    private void configDbConnection() {
+        authSvc.getDao().initDao(driverClass,url,userName,password);
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,22 +61,20 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
 
-        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
 
-        AuthorService svc = new AuthorService(dao);
 
         String task = request.getParameter("task");
 
-        String dest = DEST_PAGE;
+        String dest = VIEW_ALL_PAGE;
 
         try {
-
+            configDbConnection();
+            //add enum
             switch (task) {
                 case "Create": {
                     String name = request.getParameter("name");
-                    svc.createAuthor(name);
-                    dest = DEST_PAGE;
+                    authSvc.createAuthor(name);
+                    dest = VIEW_ALL_PAGE;
                     break;
                 }
                 case "Edit": {
@@ -71,11 +83,11 @@ public class AuthorController extends HttpServlet {
                     try {
                         if (name != null) {
 
-                            svc.updateAuthor(id, name);
+                            authSvc.updateAuthor(id, name);
 
                             break;
                         }
-                        Author author = svc.findAuthorById(id);
+                        Author author = authSvc.findAuthorById(id);
                         request.setAttribute("author", author);
                     } catch (Exception e) {
                     }
@@ -86,13 +98,13 @@ public class AuthorController extends HttpServlet {
                 }
                 case "Delete": {
                     String id = request.getParameter("id");
-                    svc.deleteAuthor(id);
+                    authSvc.deleteAuthor(id);
                     break;
                 }
                 case "Find": {
                     try {
                         String id = request.getParameter("id");
-                        Author author = svc.findAuthorById(id);
+                        Author author = authSvc.findAuthorById(id);
                         request.setAttribute("author", author);
                     } catch (Exception e) {
                         request.setAttribute("failed", e);
@@ -101,15 +113,16 @@ public class AuthorController extends HttpServlet {
                     break;
                 }
                 case "View": {
-                    List<Author> authorList = svc.getAuthorList();
+                    List<Author> authorList = authSvc.getAuthorList();
                     request.setAttribute("authorList", authorList);
                 }
                 default:
-                    dest = DEST_PAGE;
+                    dest = VIEW_ALL_PAGE;
                     break;
             }
 
         } catch (Exception e) {
+            request.setAttribute("errMsg", e.getCause().getMessage());
         }
 
         RequestDispatcher view = request.getRequestDispatcher(dest);
@@ -167,5 +180,13 @@ public class AuthorController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    @Override
+    public void init() throws ServletException {
+        driverClass = "com.mysql.jdbc.Driver";
+        url = "jdbc:mysql://localhost:3306/book?useSSL=false";
+        userName = "root";
+        password = "admin";
+    }
 
 }

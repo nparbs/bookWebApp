@@ -24,6 +24,7 @@ public interface AuthorDaoStrategy {
     
     Author findAuthorByPk(String primaryKey) throws Exception;
     
+    void initDao(String driverClass, String url, String userName, String password);
     
     
 }

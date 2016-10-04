@@ -5,6 +5,7 @@
  */
 package edu.wctc.njp.model;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,25 +13,64 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  *
  * @author Nick
  */
-public class AuthorDao implements AuthorDaoStrategy {
-
+@Dependent
+public class AuthorDao implements AuthorDaoStrategy, Serializable {
+    
+    @Inject
     private DbStrategy db;
+    
     private String driverClass;
     private String url;
     private String userName;
     private String password;
 
-    public AuthorDao(DbStrategy db, String driverClass, String url, String userName, String password) {
-        this.db = db;
+    public AuthorDao() {
+    }
+
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public void setDriverClass(String driverClass) {
         this.driverClass = driverClass;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
+    }
+    @Override
+    public void initDao(String driverClass, String url, String userName, String password){
+        setDriverClass(driverClass);
+        setUrl(url);
+        setUserName(userName);
+        setPassword(password);
     }
 
     @Override
@@ -124,14 +164,14 @@ public class AuthorDao implements AuthorDaoStrategy {
         this.db = db;
     }
 
-    public static void main(String[] args) throws Exception {
-        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
-        //dao.createAuthor("jeff");
-        //List<Author> authors = dao.getAuthorList();
-        //Author a = dao.findAuthorByPk("10");
-        //system.out.println(a);
-        
-        dao.updateAuthor("25", "jaz aids");
-    }
+//    public static void main(String[] args) throws Exception {
+//        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
+//                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
+//        //dao.createAuthor("jeff");
+//        //List<Author> authors = dao.getAuthorList();
+//        //Author a = dao.findAuthorByPk("10");
+//        //system.out.println(a);
+//        
+//        dao.updateAuthor("25", "jaz aids");
+//    }
 }

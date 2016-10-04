@@ -5,6 +5,7 @@
  */
 package edu.wctc.njp.model;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -24,7 +25,7 @@ import java.util.StringJoiner;
  *
  * @author Nick
  */
-public class MySqlDbStrategy implements DbStrategy {
+public class MySqlDbStrategy implements DbStrategy, Serializable {
 
     private Connection conn;
 
