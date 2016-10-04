@@ -30,23 +30,27 @@
                     <th>Author Name</th>
                     <th>Date Added</th>
                     <th></th>
+                    <th></th>
+                </tr>               
+                <tr>
+                <form action="AuthorController?task=Edit" method="post">
+                    <td name="id">${author.authorId}</td>
+                    <td><input type="text" name="name" value="${author.authorName}" /></td>
+                    <td><input type="text" name="date" value="${author.dateAdded}" /></td>
+                    <td>
+                        <button class="btn btn-warning" type="submit">Confirm Edit</button>
+                    </td>
+                </form> 
+                <td>
+                    <form action="AuthorController?task=Delete" method="post">
+                        <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
+                    </form>
+                </td>
                 </tr>
-                <form action="EditAuthor" method="post">
-                    <tr>
-                        <td>${author.authorId}</td>
-                        <td><input type="text" name="name" value="${author.authorName}" /></td>
-                        <td>${author.dateAdded}</td>
-                        <td>
-                            <form action="EditAuthor" method="post">
-                                <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                </form>   
             </table>
             </br>
             <h4>Add Author</h4>
-            <form class="" action="CreateAuthor" method="post">
+            <form class="" action="AuthorController?task=Create" method="post">
                 <div class="form-group">
                     Name:<input type="text" name="name"/>
                 </div>

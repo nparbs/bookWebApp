@@ -12,7 +12,7 @@
 <%
     Object obj = request.getAttribute("authorList");
     if (obj == null) {
-        response.sendRedirect("AuthorController");
+        response.sendRedirect("AuthorController?task=View");
     }
 %>
 <html>
@@ -35,34 +35,36 @@
                     <th></th>
                     <th></th>
                 </tr>
-                
-                    <c:forEach var="author" items="${authorList}">
-                        <tr>
-                            <td>${author.authorId}</td>
-                            <td>${author.authorName}</td>
-                            <td>${author.dateAdded}</td>
-                            <td>
-                                <form action="DeleteAuthor" method="post">
-                                    <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="EditAuthor" method="post">
-                                    <button class="btn btn-info" name="id" type="submit" value=${author.authorId}>Edit</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                  
+
+                <c:forEach var="author" items="${authorList}">
+
+                    <tr>
+                        <form name="${author.authorId}" action="AuthorController?task=Edit" method="post">
+                        <td name="id">${author.authorId}</td>
+                        <td name="name">${author.authorName}</td>
+                        <td name="date">${author.dateAdded}</td>
+                        <td>
+                            <button class="btn btn-info" name="id" type="submit" value=${author.authorId}>Edit</button>
+                        </td>
+                        </form>
+                        <td>
+                            <form action="AuthorController?task=Delete" method="post">
+                            <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                </c:forEach>
+
             </table>
             <h4>Add Author</h4>
-            <form class="" action="CreateAuthor" method="post">
+            <form class="" action="AuthorController?task=Create" method="post">
                 <div class="form-group">
-                Name:<input type="text" name="name"/>
+                    Name:<input type="text" name="name"/>
                 </div>
                 <button class="btn btn-success" type="submit">Add New Author</button>
             </form>
-            
+
             <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
 
         </div>

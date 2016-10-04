@@ -16,7 +16,7 @@ import java.util.List;
  * @author Nick
  */
 public class AuthorService {
-    private AuthorDaoStrategy dao;
+    private final AuthorDaoStrategy dao;
 
     public AuthorService(AuthorDaoStrategy dao) {
         this.dao = dao;
@@ -47,7 +47,9 @@ public class AuthorService {
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
         
         AuthorService service = new AuthorService(dao);
-        dao.createAuthor("jeff");
+        //dao.createAuthor("jeff");
+        
+        service.updateAuthor("25", "work plz");
         List<Author> authors = service.getAuthorList();
         System.out.println(authors);
     }

@@ -13,6 +13,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +29,16 @@ public class MySqlDbStrategy implements DbStrategy {
     private Connection conn;
 
     @Override
-    public void openConnection(String driverClass, String url,
-            String userName, String password) throws ClassNotFoundException, Exception {
-
-        Class.forName(driverClass);
-        conn = DriverManager.getConnection(url, userName, password);
+    public void openConnection(String driverClassName, String url, String username, String password)
+            throws IllegalArgumentException, ClassNotFoundException, SQLException {
+        String msg = "Error: url is null or zero length!";
+        if (url == null || url.length() == 0) {
+            throw new IllegalArgumentException(msg);
+        }
+        username = (username == null) ? "" : username;
+        password = (password == null) ? "" : password;
+        Class.forName(driverClassName);
+        conn = DriverManager.getConnection(url, username, password);
     }
 
     @Override
@@ -44,52 +50,79 @@ public class MySqlDbStrategy implements DbStrategy {
     public void createRecord(String tableName, List<String> colNames,
             List<Object> colVals) throws SQLException {
 
-        String sql = "INSERT INTO " + tableName;
-        StringJoiner sj = new StringJoiner(", ", " (", ")");
-        StringJoiner sj2 = new StringJoiner("', '", " ('", "')");
+        PreparedStatement stmt = buildCreateStatement(tableName, colNames);
 
-        for (String colName : colNames) {
-            sj.add(colName);
-        }
-        sql += sj.toString() + " VALUES ";
-        List<String> vals = new LinkedList<>();
-        for (Object obj : colVals) {
-            vals.add(obj.toString());
-        }
-        for (String colVal : vals) {
-            sj2.add(colVal);
-        }
-        sql += sj2.toString();
+        final Iterator i = colVals.iterator();
+        int index = 1;
 
-        PreparedStatement stmt = conn.prepareStatement(sql);
+        while (i.hasNext()) {
+            stmt.setObject(index++, i.next());
+        }
+
         stmt.executeUpdate();
     }
-    
+
+    private PreparedStatement buildCreateStatement(String tableName, List colNames)
+            throws SQLException {
+
+        String sql = "INSERT INTO " + tableName + " (";
+
+        final Iterator i = colNames.iterator();
+        while (i.hasNext()) {
+            sql += (String) i.next() + ", ";
+        }
+        sql = sql.replaceAll(", $", "");
+        sql += ") VALUES (";
+
+        for( int j = 0; j < colNames.size(); j++ ) {
+            sql += " ?, ";
+        }
+        sql = sql.replaceAll(", $", "");
+        sql += " )";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        System.out.println(stmt);
+        return stmt;
+    }
+
     @Override
     public void updateRecord(String tableName, List<String> colNames,
-            List<Object> colVals, String primaryKeyName,
+            List<Object> colVals, String whereField,
             Object primaryKey) throws SQLException {
 
-        String sql = "UPDATE " + tableName + " SET ";
-        List<String> vals = new ArrayList<>();
-        for (Object obj : colVals) {
-            vals.add(obj.toString());
+ 
+        int index = 1;
+        PreparedStatement stmt = buildUpdateStatement(tableName, colNames, whereField);
+        System.out.println(stmt);
+//        List<String> vals = new ArrayList<>();
+//        for (Object obj : colVals) {
+//            vals.add(obj.toString());
+//        }
+
+        for (Object colVal : colVals) {
+            stmt.setObject(index++, colVal);
         }
-        //StringJoiner sj = new StringJoiner(", ", " (", ")");
-        //StringJoiner sj2 = new StringJoiner("', '", " ('", "')");
 
-        for (String colName : colNames) {
-            int i = 0;
-            sql += colName + "='"+ vals.get(i) +"', ";
+        if (primaryKey != null) {
+            stmt.setObject(index, primaryKey);
         }
 
-        sql = sql.replaceAll(", $", ""); //strip last comma
-        sql += " WHERE ? = '?'";
-
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setObject(1, primaryKeyName);
-        stmt.setObject(2, primaryKey);
+        System.out.println(stmt);
         stmt.executeUpdate();
+    }
+
+    private PreparedStatement buildUpdateStatement(String tableName, List colNames,
+            String whereField) throws SQLException {
+
+        String sql = "UPDATE " + tableName + " SET ";
+
+        final Iterator i = colNames.iterator();
+        while (i.hasNext()) {
+            sql += (String) i.next() + " = ?, ";
+        }
+        sql = sql.replaceAll(", $", "");
+        sql += " WHERE " + whereField + " = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        return stmt;
     }
 
     @Override
@@ -103,7 +136,7 @@ public class MySqlDbStrategy implements DbStrategy {
         ResultSetMetaData rsmd = rs.getMetaData();
         int colCount = rsmd.getColumnCount();
         Map<String, Object> record = new LinkedHashMap<>();
-        while (rs.next()) {        
+        while (rs.next()) {
             for (int i = 0; i < colCount; i++) {
                 String colName = rsmd.getColumnName(i + 1);
                 Object colData = rs.getObject(colName);
@@ -140,28 +173,48 @@ public class MySqlDbStrategy implements DbStrategy {
     public void deleteRecord(String tableName, String primaryKeyName,
             Object primaryKey) throws SQLException {
 
-        PreparedStatement stmt = buildDeleteStatement(tableName, primaryKeyName, primaryKey);
+        PreparedStatement stmt = buildDeleteStatement(tableName, primaryKeyName);
+        stmt.setObject(1, primaryKey);
         stmt.executeUpdate();
 
     }
 
     private PreparedStatement buildDeleteStatement(String tableName,
-            String primaryKeyName, Object primaryKey) throws SQLException {
+            String whereField) throws SQLException {
 
-        String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyName + " = ?";
+        String sql = "DELETE FROM " + tableName;
+        if (whereField != null) {
+            sql += " WHERE ";
+            sql += whereField + " = ?";
+        }
         PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setObject(1, primaryKey);
+
         return stmt;
     }
 
+    
+    
+    
+    
+    //
+    //
+    //
+    //
     public static void main(String[] args) throws Exception {
         MySqlDbStrategy db = new MySqlDbStrategy();
         db.openConnection("com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
 
         //List<Map<String, Object>> records = db.findAllRecords("author", 100);
-        Map<String, Object> rec = db.findRecordByPk("author", "author_id", "5");
-        System.out.println(rec.toString());
+        List<String> s = new ArrayList<>();
+        List<Object> o = new ArrayList<>();
+        o.add("update");
+        s.add("author_name");
+//
+        //Map<String, Object> rec = db.findRecordByPk("author", "author_id", "5");
+        db.updateRecord("author", s, o, "author_id", 5);
+//        System.out.println(rec.toString());
+
         db.closeConnection();
     }
 }

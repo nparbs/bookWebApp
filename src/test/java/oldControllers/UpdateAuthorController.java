@@ -3,8 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.wctc.njp.controller;
+package oldControllers;
 
+import edu.wctc.njp.model.Author;
+import edu.wctc.njp.model.AuthorDao;
+import edu.wctc.njp.model.AuthorDaoStrategy;
+import edu.wctc.njp.model.AuthorService;
+import edu.wctc.njp.model.MySqlDbStrategy;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -13,17 +18,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import edu.wctc.njp.model.AuthorDao;
-import edu.wctc.njp.model.AuthorDaoStrategy;
-import edu.wctc.njp.model.AuthorService;
-import edu.wctc.njp.model.MySqlDbStrategy;
 
 /**
  *
  * @author Nick
  */
-@WebServlet(name = "CreateAuthor", urlPatterns = {"/CreateAuthor"})
-public class CreateAuthor extends HttpServlet {
+@WebServlet(name = "UpdateAuthor", urlPatterns = {"/EditAuthor"})
+public class UpdateAuthorController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,22 +38,34 @@ public class CreateAuthor extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
 
         AuthorService svc = new AuthorService(dao);
+        
+        String id = request.getParameter("id");
+        String name = request.getParameter("name");
+
         try {
-
-            String name = request.getParameter("name");
-
-            svc.createAuthor(name);
+            if (name != null) {
+                svc.updateAuthor(id, name);
+            }
             
+            Author author = svc.findAuthorById(id);
+
+            request.setAttribute("author", author);
+
         } catch (Exception e) {
 
         }
         RequestDispatcher view = request.getRequestDispatcher("viewAuthors.jsp");
+
+        if (name == null) {
+            view = request.getRequestDispatcher("editAuthor.jsp");
+        }
         view.forward(request, response);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

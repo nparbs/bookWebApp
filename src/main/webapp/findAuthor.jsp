@@ -21,7 +21,7 @@
     <body>
         <div class="container">
             <h1>Find Author by Id</h1>
-            <form action="FindAuthor" method="post">
+            <form action="AuthorController?task=Find" method="post">
                 Author Id: <input type="text" name="id"/>
                 <button class="btn btn-success" type="submit">Find Author</button>
             </form>
@@ -37,15 +37,24 @@
                     <th>Author Name</th>
                     <th>Date Added</th>
                     <th></th>
+                    <th></th>
                 </tr>
-                <form action="DeleteAuthor" method="post">
                     <tr>
-                        <td>${author.authorId}</td>
-                        <td>${author.authorName}</td>
-                        <td>${author.dateAdded}</td>
-                        <td><button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button></td>
+                        <form action="AuthorController?task=Edit" method="post">
+                        <td name="id">${author.authorId}</td>
+                        <td name="name">${author.authorName}</td>
+                        <td name="date">${author.dateAdded}</td>
+                        <td>
+                            <button class="btn btn-danger" name="id"type="submit" value=${author.authorId}>Edit</button>
+                        </td>
+                        </form>
+                        <form action="AuthorController?task=Delete" method="post">
+                        <td>
+                        <button class="btn btn-danger" name="id"type="submit" value=${author.authorId}>Delete</button>
+                        </td>
+                        </form>
                     </tr>
-                </form>   
+                   
             </table>
                     
             <%    }
@@ -56,7 +65,7 @@
             <% } %>
             
             <h4>Add Author</h4>
-            <form action="CreateAuthor" method="post">
+            <form action="AuthorController?task=Create" method="post">
                 Name: <input type="text" name="name"/>
                 <button class="btn btn-success" type="submit">Add New Author</button>
             </form>

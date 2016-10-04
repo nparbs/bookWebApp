@@ -129,7 +129,9 @@ public class AuthorDao implements AuthorDaoStrategy {
                 "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
         //dao.createAuthor("jeff");
         //List<Author> authors = dao.getAuthorList();
-        Author a = dao.findAuthorByPk("10");
-        System.out.println(a);
+        //Author a = dao.findAuthorByPk("10");
+        //system.out.println(a);
+        
+        dao.updateAuthor("25", "jaz aids");
     }
 }
