@@ -24,46 +24,65 @@
     </head>
     <body>
         <div class="container">
-            <h1>All Authors</h1>
+            <div class="row">
+                <h1>All Authors</h1>
 
-            <table class="table table-striped table-hover">
-                <tr>
-
-                    <th>Author ID</th>
-                    <th>Author Name</th>
-                    <th>Date Added</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-
-                <c:forEach var="author" items="${authorList}">
-
+                <table class="table table-striped table-hover">
                     <tr>
+
+                        <th>Author ID</th>
+                        <th>Author Name</th>
+                        <th>Date Added</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+
+                    <c:forEach var="author" items="${authorList}">
+
+                        <tr>
                         <form name="${author.authorId}" action="AuthorController?task=Edit" method="post">
-                        <td name="id">${author.authorId}</td>
-                        <td name="name">${author.authorName}</td>
-                        <td name="date">${author.dateAdded}</td>
-                        <td>
-                            <button class="btn btn-info" name="id" type="submit" value=${author.authorId}>Edit</button>
-                        </td>
+                            <td name="id">${author.authorId}</td>
+                            <td name="name">${author.authorName}</td>
+                            <td name="date">${author.dateAdded}</td>
+                            <td>
+                                <button class="btn btn-info" name="id" type="submit" value=${author.authorId}>Edit</button>
+                            </td>
                         </form>
                         <td>
                             <form action="AuthorController?task=Delete" method="post">
-                            <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
+                                <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
                             </form>
                         </td>
-                    </tr>
+                        </tr>
+                    </c:forEach>
+                </table>
 
-                </c:forEach>
-
-            </table>
-            <h4>Add Author</h4>
-            <form class="" action="AuthorController?task=Create" method="post">
-                <div class="form-group">
-                    Name:<input type="text" name="name"/>
+                <div class="col-lg-5">
+                    <div style="margin-bottom: 25px;" ><a href="findAuthor.jsp" class="btn btn-primary">Find author</a></div>
                 </div>
-                <button class="btn btn-success" type="submit">Add New Author</button>
-            </form>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="well bs-component">
+                        <form class="form-horizontal" action="AuthorController?task=Create" method="post"><fieldset>
+                                <legend>Create Author</legend>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label" for="name">Name: </label>
+                                    <div class="col-lg-10">
+                                        <input type="text" name="name"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-10 col-lg-offset-2">
+                                        </br>
+                                        <button class="btn btn-success" type="submit">Add New Author</button>
+                                    </div>
+                            </fieldset></form>
+                    </div>
+                </div>
+            </div>
 
             <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
 

@@ -20,6 +20,7 @@ public interface AuthorDaoStrategy {
     
     void createAuthor(String name) throws ClassNotFoundException, SQLException, Exception;
     
+    //void updateAuthor(String id, List<Object> colVals) throws Exception;
     void updateAuthor(String id, String name) throws Exception;
     
     Author findAuthorByPk(String primaryKey) throws Exception;

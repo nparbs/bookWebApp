@@ -29,6 +29,16 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
 
     private Connection conn;
 
+    /**
+     *
+     * @param driverClassName
+     * @param url
+     * @param username
+     * @param password
+     * @throws IllegalArgumentException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     @Override
     public void openConnection(String driverClassName, String url, String username, String password)
             throws IllegalArgumentException, ClassNotFoundException, SQLException {
@@ -42,6 +52,10 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         conn = DriverManager.getConnection(url, username, password);
     }
 
+    /**
+     *
+     * @throws SQLException
+     */
     @Override
     public void closeConnection() throws SQLException {
         conn.close();
@@ -90,14 +104,9 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
             List<Object> colVals, String whereField,
             Object primaryKey) throws SQLException {
 
- 
         int index = 1;
         PreparedStatement stmt = buildUpdateStatement(tableName, colNames, whereField);
-        System.out.println(stmt);
-//        List<String> vals = new ArrayList<>();
-//        for (Object obj : colVals) {
-//            vals.add(obj.toString());
-//        }
+        //System.out.println(stmt);
 
         for (Object colVal : colVals) {
             stmt.setObject(index++, colVal);
@@ -107,7 +116,7 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
             stmt.setObject(index, primaryKey);
         }
 
-        System.out.println(stmt);
+        //System.out.println(stmt);
         stmt.executeUpdate();
     }
 

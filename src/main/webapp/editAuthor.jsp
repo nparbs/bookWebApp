@@ -31,12 +31,13 @@
                     <th>Date Added</th>
                     <th></th>
                     <th></th>
+                    <th></th>                       
                 </tr>               
                 <tr>
                 <form action="AuthorController?task=Edit" method="post">
                     <td>${author.authorId}</td>
                     <td><input type="text" name="name" value="${author.authorName}" /></td>
-                    <td><input type="text" name="date" value="${author.dateAdded}" /></td>
+                    <td name="date">${author.dateAdded}</td>
                     <td>
                         <button class="btn btn-warning" name="id" value="${author.authorId}"  type="submit">Confirm Edit</button>
                     </td>
@@ -46,16 +47,14 @@
                         <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
                     </form>
                 </td>
+                <td>
+                    <a class="btn btn-danger"href="viewAuthors.jsp">Cancel</a>
+                </td>
                 </tr>
             </table>
             </br>
-            <h4>Add Author</h4>
-            <form class="" action="AuthorController?task=Create" method="post">
-                <div class="form-group">
-                    Name:<input type="text" name="name"/>
-                </div>
-                <button class="btn btn-success" type="submit">Add New Author</button>
-            </form>
+
+
 
             <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
 

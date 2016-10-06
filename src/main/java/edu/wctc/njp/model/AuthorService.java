@@ -25,7 +25,6 @@ public class AuthorService implements Serializable{
     private AuthorDaoStrategy dao;
 
     public AuthorService() {
-
     }
 
     public List<Author> getAuthorList() throws SQLException, Exception{   
@@ -47,6 +46,10 @@ public class AuthorService implements Serializable{
     public Author findAuthorById(String id) throws Exception{
         return dao.findAuthorByPk(id);
     }
+
+    public AuthorDaoStrategy getDao() {
+        return dao;
+    }
     //
     //
     //
@@ -62,8 +65,6 @@ public class AuthorService implements Serializable{
 //        System.out.println(authors);
 //    }
 
-    public AuthorDaoStrategy getDao() {
-        return dao;
-    }
+
     
 }

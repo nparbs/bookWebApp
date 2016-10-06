@@ -21,55 +21,70 @@
     <body>
         <div class="container">
             <h1>Find Author by Id</h1>
-            <form action="AuthorController?task=Find" method="post">
-                Author Id: <input type="text" name="id"/>
-                <button class="btn btn-success" type="submit">Find Author</button>
-            </form>
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="well bs-component">
+                        <form class="form-horizontal" action="AuthorController?task=Find" method="post"><fieldset>
+                                <legend>Find Author</legend>
+                                <div class="form-group">
+                                    <label class="col-lg-3 control-label" for="id">Author Id: </label>
+                                    <div class="col-lg-8">
+                                        <input type="text" name="id"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-2 col-lg-offset-1">
+
+                                        <button class="btn btn-success" type="submit">Find Author</button>
+                                    </div>
+                            </fieldset></form>
+                    </div>
+                </div>
+            </div>
+
 
             <% Object author = request.getAttribute("author");
-            Object failed = request.getAttribute("failed");
+                Object failed = request.getAttribute("failed");
                 if (author != null) { %>
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table table-striped table-hover">
+                        <tr>
 
-            <table class="table table-striped table-hover">
-                <tr>
-
-                    <th>Author ID</th>
-                    <th>Author Name</th>
-                    <th>Date Added</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                    <tr>
+                            <th>Author ID</th>
+                            <th>Author Name</th>
+                            <th>Date Added</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
                         <form action="AuthorController?task=Edit" method="post">
-                        <td name="id">${author.authorId}</td>
-                        <td name="name">${author.authorName}</td>
-                        <td name="date">${author.dateAdded}</td>
-                        <td>
-                            <button class="btn btn-danger" name="id"type="submit" value=${author.authorId}>Edit</button>
-                        </td>
+                            <td name="id">${author.authorId}</td>
+                            <td name="name">${author.authorName}</td>
+                            <td name="date">${author.dateAdded}</td>
+                            <td>
+                                <button class="btn btn-warning" name="id"type="submit" value=${author.authorId}>Edit</button>
+                            </td>
                         </form>
                         <form action="AuthorController?task=Delete" method="post">
-                        <td>
-                        <button class="btn btn-danger" name="id"type="submit" value=${author.authorId}>Delete</button>
-                        </td>
+                            <td>
+                                <button class="btn btn-danger" name="id"type="submit" value=${author.authorId}>Delete</button>
+                            </td>
                         </form>
-                    </tr>
-                   
-            </table>
-                    
-            <%    }
-                if(failed !=null){ %>
-                
-            <p class="well">Failed to find Author</p>
-            
-            <% } %>
-            
-            <h4>Add Author</h4>
-            <form action="AuthorController?task=Create" method="post">
-                Name: <input type="text" name="name"/>
-                <button class="btn btn-success" type="submit">Add New Author</button>
-            </form>
+                        </tr>
 
+                    </table>
+                </div>
+            </div>
+
+            <%    }
+                if (failed != null) { %>
+
+            <div class="panel panel-warning"><div class="panel-body">Failed to find Author</div></div>
+
+            <% }%>
+            </br>
+            <div ><a class="btn btn-primary" href="viewAuthors.jsp">View All Authors</a></div>
             <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
 
         </div>
