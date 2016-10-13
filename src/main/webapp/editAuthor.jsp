@@ -11,6 +11,9 @@
 <!DOCTYPE html>
 <%
     Object author = request.getAttribute("author");
+    if (author==null){
+        response.sendRedirect("AuthorController?task=View");
+    }
 %>
 <html>
     <head>
@@ -21,6 +24,7 @@
     </head>
     <body>
         <div class="container">
+            <jsp:include page="timeHeader.jsp"/>
             <h1>Edit Author</h1>
 
             <table class="table table-striped table-hover">

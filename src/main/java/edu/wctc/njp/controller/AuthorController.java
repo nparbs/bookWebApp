@@ -22,8 +22,12 @@ import edu.wctc.njp.model.AuthorDaoStrategy;
 import edu.wctc.njp.model.AuthorService;
 import edu.wctc.njp.model.DbStrategy;
 import edu.wctc.njp.model.MySqlDbStrategy;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -52,9 +56,8 @@ public class AuthorController extends HttpServlet {
     private String url;
     private String userName;
     private String password;
-    
-    //private String email;
 
+    //private String email;
     @Inject
     private AuthorService authSvc;
 
@@ -75,15 +78,19 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
 
+        HttpSession session = request.getSession();
+        ServletContext ctx = request.getServletContext();
         String task = request.getParameter(TASK);
 
         String dest = VIEW_ALL_PAGE;
 
         try {
             configDbConnection();
-            
-            if(task == null) task = VIEW;
-            
+
+            if (task == null) {
+                task = VIEW;
+            }
+
             switch (task) {
                 case CREATE: {
                     String name = request.getParameter(NAME);
@@ -103,27 +110,35 @@ public class AuthorController extends HttpServlet {
                         }
                         Author author = authSvc.findAuthorById(id);
                         request.setAttribute(AUTHOR, author);
+                        //session.removeAttribute(AUTHOR);
+                        //session.setAttribute(AUTHOR, author);
                     } catch (Exception e) {
                     }
                     if (name == null) {
                         dest = EDIT_PAGE;
                         request.setAttribute("error", "Name must be at least 1 char");
+                        //session.setAttribute("error", "Name must be at least 1 char");
                     }
                     break;
                 }
                 case DELETE: {
                     String id = request.getParameter(ID);
                     authSvc.deleteAuthor(id);
+                    dest = VIEW_ALL_PAGE;
                     break;
                 }
                 case FIND: {
-                        String id = null;
+                    String id = null;
                     try {
                         id = request.getParameter(ID);
                         Author author = authSvc.findAuthorById(id);
                         request.setAttribute(AUTHOR, author);
+                        //session.removeAttribute(AUTHOR);
+                        //session.setAttribute(AUTHOR, author);
                     } catch (Exception e) {
-                        if(id!=null) request.setAttribute("failed", e);
+                        if (id != null) {
+                            request.setAttribute("failed", e);
+                        }
                     }
                     dest = FIND_PAGE;
                     break;
@@ -131,19 +146,34 @@ public class AuthorController extends HttpServlet {
                 case VIEW: {
                     List<Author> authorList = authSvc.getAuthorList();
                     request.setAttribute(AUTHOR_LIST, authorList);
+                    //session.removeAttribute(AUTHOR_LIST);
+                    //session.setAttribute(AUTHOR_LIST, authorList);
+                    dest = VIEW_ALL_PAGE;
                 }
                 default:
                     dest = VIEW_ALL_PAGE;
+                    //response.sendRedirect(dest);
                     break;
             }
-
         } catch (Exception e) {
             request.setAttribute("errorMsg", e.getCause().getMessage());
         }
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        ctx.setAttribute("time", dateFormat.format(Calendar.getInstance().getTime()));
+
+        //response.sendRedirect(dest);
         RequestDispatcher view = request.getRequestDispatcher(dest);
 
         view.forward(request, response);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        driverClass = getServletContext().getInitParameter("db.driver.class");
+        url = getServletContext().getInitParameter("db.url");
+        userName = getServletContext().getInitParameter("db.username");
+        password = getServletContext().getInitParameter("db.password");
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -201,12 +231,4 @@ public class AuthorController extends HttpServlet {
      *
      * @throws ServletException
      */
-    @Override
-    public void init() throws ServletException {     
-        driverClass = getServletContext().getInitParameter("db.driver.class");
-        url = getServletContext().getInitParameter("db.url");
-        userName = getServletContext().getInitParameter("db.username");
-        password = getServletContext().getInitParameter("db.password");
-    }
-
 }

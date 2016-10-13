@@ -31,7 +31,7 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
     private String userName;
     private String password;
     
-    private AuthorStrings str = new AuthorStrings();
+    private final AuthorStrings str = new AuthorStrings();
 
     public AuthorDao() {
     }
@@ -166,6 +166,10 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
         this.password = password;
     }
     
+    //
+    //
+    //
+    //
 
     public static void main(String[] args) throws Exception {
         AuthorDaoStrategy dao = new AuthorDao();

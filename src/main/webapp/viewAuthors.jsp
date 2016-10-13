@@ -10,10 +10,13 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <%
+    //HttpSession s = request.getSession();
     Object obj = request.getAttribute("authorList");
     if (obj == null) {
         response.sendRedirect("AuthorController?task=View");
     }
+    
+//<jsp:include page="timeHeader.jsp"/>
 %>
 <html>
     <head>
@@ -24,6 +27,7 @@
     </head>
     <body>
         <div class="container">
+            <jsp:include page="timeHeader.jsp"/>
             <div class="row">
                 <h1>All Authors</h1>
                 <table class="table table-striped table-hover">

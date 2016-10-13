@@ -28,13 +28,16 @@ import java.util.StringJoiner;
 public class MySqlDbStrategy implements DbStrategy, Serializable {
 
     private Connection conn;
+    
+    private String UrlErrorMsg = "Error: url is null or zero length";
 
     /**
-     *
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
+     *  Opens the SQL database connection.
+     * 
+     * @param driverClassName Driver class name for connection. Must not be null.
+     * @param url URL used for connection. Must not be null.
+     * @param username Username used for connection. Must not be null.
+     * @param password Password used for connection. Must not be null.
      * @throws IllegalArgumentException
      * @throws ClassNotFoundException
      * @throws SQLException
@@ -42,9 +45,9 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
     @Override
     public void openConnection(String driverClassName, String url, String username, String password)
             throws IllegalArgumentException, ClassNotFoundException, SQLException {
-        String msg = "Error: url is null or zero length";
+        
         if (url == null || url.length() == 0) {
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException(UrlErrorMsg);
         }
         username = (username == null) ? "" : username;
         password = (password == null) ? "" : password;
@@ -53,7 +56,8 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
     }
 
     /**
-     *
+     * Closes the SQL database connection.
+     * 
      * @throws SQLException
      */
     @Override
@@ -61,6 +65,14 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         conn.close();
     }
 
+    /**
+     * Creates a database record.
+     * 
+     * @param tableName The database table where the record is being created.
+     * @param colNames The tables column names used for creating the record.
+     * @param colVals The values for each of the tables columns.
+     * @throws SQLException
+     */
     @Override
     public void createRecord(String tableName, List<String> colNames,
             List<Object> colVals) throws SQLException {
@@ -89,7 +101,7 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         sql = sql.replaceAll(", $", "");
         sql += ") VALUES (";
 
-        for( int j = 0; j < colNames.size(); j++ ) {
+        for (Object c : colNames) {
             sql += " ?, ";
         }
         sql = sql.replaceAll(", $", "");
@@ -135,6 +147,14 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         return stmt;
     }
 
+    /**
+     *
+     * @param tableName
+     * @param pkName
+     * @param primaryKey
+     * @return
+     * @throws SQLException
+     */
     @Override
     public Map<String, Object> findRecordByPk(String tableName, String pkName,
             Object primaryKey) throws SQLException {
@@ -156,6 +176,13 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         return record;
     }
 
+    /**
+     *
+     * @param tableName
+     * @param maxRecords
+     * @return
+     * @throws SQLException
+     */
     @Override
     public List<Map<String, Object>> findAllRecords(String tableName,
             int maxRecords) throws SQLException {
@@ -179,6 +206,13 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         return records;
     }
 
+    /**
+     *
+     * @param tableName
+     * @param primaryKeyName
+     * @param primaryKey
+     * @throws SQLException
+     */
     @Override
     public void deleteRecord(String tableName, String primaryKeyName,
             Object primaryKey) throws SQLException {

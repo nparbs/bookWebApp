@@ -26,6 +26,9 @@ public class AuthorService implements Serializable{
     @Inject
     private AuthorDaoStrategy dao;
 
+    /**
+     * Default Constructor
+     */
     public AuthorService() {
     }
 

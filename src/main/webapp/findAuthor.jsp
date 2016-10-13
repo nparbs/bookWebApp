@@ -17,6 +17,7 @@
     </head>
     <body>
         <div class="container">
+            <jsp:include page="timeHeader.jsp"/>
             <h1>Find Author by Id</h1>
             <div class="row">
                 <div class="col-lg-5">
