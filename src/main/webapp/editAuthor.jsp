@@ -25,7 +25,6 @@
 
             <table class="table table-striped table-hover">
                 <tr>
-
                     <th>Author ID</th>
                     <th>Author Name</th>
                     <th>Date Added</th>
@@ -48,16 +47,11 @@
                     </form>
                 </td>
                 <td>
-                    <a class="btn btn-danger"href="viewAuthors.jsp">Cancel</a>
+                    <a class="btn btn-danger"href="AuthorController?task=View">Cancel</a>
                 </td>
                 </tr>
             </table>
             </br>
-
-
-
-            <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
-
         </div>
     </body>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

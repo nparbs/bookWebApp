@@ -8,9 +8,6 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-
-
-
 <html>
     <head>
         <link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css">
@@ -42,10 +39,12 @@
                 </div>
             </div>
 
-
-            <% Object author = request.getAttribute("author");
+            <% 
+                Object author = request.getAttribute("author");
                 Object failed = request.getAttribute("failed");
-                if (author != null) { %>
+                if (author != null) { 
+            %>
+                
             <div class="row">
                 <div class="col-lg-12">
                     <table class="table table-striped table-hover">
@@ -78,15 +77,16 @@
             </div>
 
             <%    }
-                if (failed != null) { %>
+                if (failed != null) { 
+            %>
 
             <div class="panel panel-warning"><div class="panel-body">Failed to find Author</div></div>
 
-            <% }%>
+            <% }
+            %>
+            
             </br>
-            <div ><a class="btn btn-primary" href="viewAuthors.jsp">View All Authors</a></div>
-            <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
-
+            <div ><a class="btn btn-primary" href="AuthorController?task=View">View All Authors</a></div>
         </div>
     </body>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

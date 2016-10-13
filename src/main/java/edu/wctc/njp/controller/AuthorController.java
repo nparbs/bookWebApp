@@ -52,6 +52,8 @@ public class AuthorController extends HttpServlet {
     private String url;
     private String userName;
     private String password;
+    
+    //private String email;
 
     @Inject
     private AuthorService authSvc;
@@ -79,7 +81,9 @@ public class AuthorController extends HttpServlet {
 
         try {
             configDbConnection();
-            //add enum
+            
+            if(task == null) task = VIEW;
+            
             switch (task) {
                 case CREATE: {
                     String name = request.getParameter(NAME);
@@ -103,6 +107,7 @@ public class AuthorController extends HttpServlet {
                     }
                     if (name == null) {
                         dest = EDIT_PAGE;
+                        request.setAttribute("error", "Name must be at least 1 char");
                     }
                     break;
                 }
@@ -112,12 +117,13 @@ public class AuthorController extends HttpServlet {
                     break;
                 }
                 case FIND: {
+                        String id = null;
                     try {
-                        String id = request.getParameter(ID);
+                        id = request.getParameter(ID);
                         Author author = authSvc.findAuthorById(id);
                         request.setAttribute(AUTHOR, author);
                     } catch (Exception e) {
-                        request.setAttribute("failed", e);
+                        if(id!=null) request.setAttribute("failed", e);
                     }
                     dest = FIND_PAGE;
                     break;
@@ -196,11 +202,11 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException
      */
     @Override
-    public void init() throws ServletException {
-        driverClass = "com.mysql.jdbc.Driver";
-        url = "jdbc:mysql://localhost:3306/book?useSSL=false";
-        userName = "root";
-        password = "admin";
+    public void init() throws ServletException {     
+        driverClass = getServletContext().getInitParameter("db.driver.class");
+        url = getServletContext().getInitParameter("db.url");
+        userName = getServletContext().getInitParameter("db.username");
+        password = getServletContext().getInitParameter("db.password");
     }
 
 }

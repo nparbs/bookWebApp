@@ -26,19 +26,15 @@
         <div class="container">
             <div class="row">
                 <h1>All Authors</h1>
-
                 <table class="table table-striped table-hover">
                     <tr>
-
                         <th>Author ID</th>
                         <th>Author Name</th>
                         <th>Date Added</th>
                         <th></th>
                         <th></th>
                     </tr>
-
                     <c:forEach var="author" items="${authorList}">
-
                         <tr>
                         <form name="${author.authorId}" action="AuthorController?task=Edit" method="post">
                             <td name="id">${author.authorId}</td>
@@ -58,15 +54,14 @@
                 </table>
 
                 <div class="col-lg-5">
-                    <div style="margin-bottom: 25px;" ><a href="findAuthor.jsp" class="btn btn-primary">Find author</a></div>
+                    <div style="margin-bottom: 25px;" ><a href="AuthorController?task=Find" class="btn btn-primary">Find author</a></div>
                 </div>
             </div>
-
-
             <div class="row">
                 <div class="col-lg-6">
                     <div class="well bs-component">
-                        <form class="form-horizontal" action="AuthorController?task=Create" method="post"><fieldset>
+                        <form class="form-horizontal" action="AuthorController?task=Create" method="post">
+                            <fieldset>
                                 <legend>Create Author</legend>
                                 <div class="form-group">
                                     <label class="col-lg-2 control-label" for="name">Name: </label>
@@ -79,13 +74,11 @@
                                         </br>
                                         <button class="btn btn-success" type="submit">Add New Author</button>
                                     </div>
-                            </fieldset></form>
+                            </fieldset>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <!--<div class="btn btn-success"><a href="index.html"></a>Back to home</div>-->
-
         </div>
     </body>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
