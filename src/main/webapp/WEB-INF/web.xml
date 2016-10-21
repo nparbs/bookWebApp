@@ -29,6 +29,11 @@
     </context-param>
     
     <context-param>
+        <param-name>db.jndi.name</param-name>
+        <param-value>jdbc/book</param-value>
+    </context-param>
+    
+    <context-param>
         <param-name>webmaster-email</param-name>
         <param-value>Nparbs@gmail.com</param-value>
     </context-param>

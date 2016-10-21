@@ -4,6 +4,7 @@
     Author     : Nick
 --%>
 
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -11,8 +12,11 @@
 <!DOCTYPE html>
 <%
     Object author = request.getAttribute("author");
-    if (author==null){
-        response.sendRedirect("AuthorController?task=View");
+    HttpSession sess = request.getSession();
+    if (sess != null) {
+        if (author == null) {
+            response.sendRedirect(response.encodeURL("AuthorController?task=Edit"));
+        }
     }
 %>
 <html>
@@ -37,7 +41,7 @@
                     <th></th>                       
                 </tr>               
                 <tr>
-                <form action="AuthorController?task=Edit" method="post">
+                <form action="<%= response.encodeURL("AuthorController?task=Edit") %>" method="post">
                     <td>${author.authorId}</td>
                     <td><input type="text" name="name" value="${author.authorName}" /></td>
                     <td name="date">${author.dateAdded}</td>
@@ -46,12 +50,12 @@
                     </td>
                 </form> 
                 <td>
-                    <form action="AuthorController?task=Delete" method="post">
+                    <form action="<%= response.encodeURL("AuthorController?task=Delete") %>" method="post">
                         <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
                     </form>
                 </td>
                 <td>
-                    <a class="btn btn-danger"href="AuthorController?task=View">Cancel</a>
+                    <a class="btn btn-danger"href="<%= response.encodeURL("AuthorController?task=View") %>">Cancel</a>
                 </td>
                 </tr>
             </table>

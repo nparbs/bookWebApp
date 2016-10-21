@@ -7,6 +7,7 @@ package edu.wctc.njp.model;
 
 import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
 
 /**
  *
@@ -26,6 +27,8 @@ public interface AuthorDaoStrategy {
     Author findAuthorByPk(String primaryKey) throws Exception;
     
     void initDao(String driverClass, String url, String userName, String password);
+    
+    void initDao(DataSource ds) throws SQLException;
     
     
 }

@@ -10,12 +10,15 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <%
-    //HttpSession s = request.getSession();
-    Object obj = request.getAttribute("authorList");
-    if (obj == null) {
-        response.sendRedirect("AuthorController?task=View");
+    HttpSession sess = request.getSession();
+    if (sess != null) {
+        Object aList = sess.getAttribute("authorList");
+        if (aList == null) {
+            response.sendRedirect(response.encodeURL("AuthorController?task=View"));
+        }
+
     }
-    
+
 //<jsp:include page="timeHeader.jsp"/>
 %>
 <html>
@@ -40,7 +43,7 @@
                     </tr>
                     <c:forEach var="author" items="${authorList}">
                         <tr>
-                        <form name="${author.authorId}" action="AuthorController?task=Edit" method="post">
+                        <form name="${author.authorId}" action="<%= response.encodeURL("AuthorController?task=Edit") %>" method="post">
                             <td name="id">${author.authorId}</td>
                             <td name="name">${author.authorName}</td>
                             <td name="date">${author.dateAdded}</td>
@@ -49,7 +52,7 @@
                             </td>
                         </form>
                         <td>
-                            <form action="AuthorController?task=Delete" method="post">
+                            <form action="<%= response.encodeURL("AuthorController?task=Delete") %>" method="post">
                                 <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
                             </form>
                         </td>
@@ -58,13 +61,13 @@
                 </table>
 
                 <div class="col-lg-5">
-                    <div style="margin-bottom: 25px;" ><a href="AuthorController?task=Find" class="btn btn-primary">Find author</a></div>
+                    <div style="margin-bottom: 25px;" ><a href="<%= response.encodeURL("AuthorController?task=Find") %>" class="btn btn-primary">Find author</a></div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6">
                     <div class="well bs-component">
-                        <form class="form-horizontal" action="AuthorController?task=Create" method="post">
+                        <form class="form-horizontal" action="<%= response.encodeURL("AuthorController?task=Create") %>" method="post">
                             <fieldset>
                                 <legend>Create Author</legend>
                                 <div class="form-group">

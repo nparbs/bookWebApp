@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.sql.DataSource;
 
 /**
  *
@@ -22,23 +23,29 @@ import javax.inject.Inject;
  */
 @Dependent
 public class AuthorDao implements AuthorDaoStrategy, Serializable {
-    
+
     @Inject
     private DbStrategy db;
-    
+
+    private DataSource ds;
+
     private String driverClass;
     private String url;
     private String userName;
     private String password;
-    
+
     private final AuthorStrings str = new AuthorStrings();
 
     public AuthorDao() {
     }
 
-    
     @Override
-    public void initDao(String driverClass, String url, String userName, String password){
+    public void initDao(DataSource ds) throws SQLException {
+        setDs(ds);
+    }
+
+    @Override
+    public void initDao(String driverClass, String url, String userName, String password) {
         setDriverClass(driverClass);
         setUrl(url);
         setUserName(userName);
@@ -47,16 +54,20 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
 
     @Override
     public void updateAuthor(String id, String name) throws Exception {
-        db.openConnection(driverClass, url, userName, password);
+        if (ds == null) {
+            db.openConnection(driverClass, url, userName, password);
+        } else {
+            db.openConnection(ds);
+        }
 
         List<String> colNames = new ArrayList<>();
         //colNames.add("author_id");
         colNames.add(str.AUTHOR_Name);
         //colNames.add("date_added");
-        
+
         List<Object> colVals = new ArrayList<>();
         colVals.add(name);
-        
+
         db.updateRecord(str.AUTHOR, colNames, colVals, str.AUTHOR_ID, id);
         db.closeConnection();
 
@@ -64,12 +75,16 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
 
     @Override
     public void createAuthor(String name) throws ClassNotFoundException, SQLException, Exception {
-        db.openConnection(driverClass, url, userName, password);
+        if (ds == null) {
+            db.openConnection(driverClass, url, userName, password);
+        } else {
+            db.openConnection(ds);
+        }
 
         List<String> colNames = new ArrayList<>();
         colNames.add(str.AUTHOR_Name);
         colNames.add(str.DATE_ADDED);
-        
+
         List<Object> colVals = new ArrayList<>();
         colVals.add(name);
         Date d = new Date();
@@ -82,7 +97,11 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
     @Override
     public void deleteAuthorById(String primaryKey) throws Exception {
         Integer id = Integer.parseInt(primaryKey);
-        db.openConnection(driverClass, url, userName, password);
+        if (ds == null) {
+            db.openConnection(driverClass, url, userName, password);
+        } else {
+            db.openConnection(ds);
+        }
         db.deleteRecord(str.AUTHOR, str.AUTHOR_ID, id);
         db.closeConnection();
 
@@ -90,7 +109,11 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
 
     @Override
     public Author findAuthorByPk(String primaryKey) throws Exception {
-        db.openConnection(driverClass, url, userName, password);
+        if (ds == null) {
+            db.openConnection(driverClass, url, userName, password);
+        } else {
+            db.openConnection(ds);
+        }
         Map<String, Object> rec = db.findRecordByPk(str.AUTHOR, str.AUTHOR_ID, primaryKey);
         Author author = new Author();
         int id = Integer.parseInt(rec.get(str.AUTHOR_ID).toString());
@@ -108,7 +131,11 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
     @Override
     public List<Author> getAuthorList() throws ClassNotFoundException, SQLException, Exception {
 
-        db.openConnection(driverClass, url, userName, password);
+        if (ds == null) {
+            db.openConnection(driverClass, url, userName, password);
+        } else {
+            db.openConnection(ds);
+        }
 
         List<Map<String, Object>> records = db.findAllRecords(str.AUTHOR, 500);
         List<Author> authors = new ArrayList<>();
@@ -133,7 +160,7 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
     public final void setDb(DbStrategy db) {
         this.db = db;
     }
-    
+
     public String getDriverClass() {
         return driverClass;
     }
@@ -165,12 +192,19 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    //
-    //
-    //
-    //
 
+    public DataSource getDs() {
+        return ds;
+    }
+
+    public void setDs(DataSource ds) {
+        this.ds = ds;
+    }
+
+    //
+    //
+    //
+    //
     public static void main(String[] args) throws Exception {
         AuthorDaoStrategy dao = new AuthorDao();
 //        //dao.createAuthor("jeff");
@@ -178,6 +212,6 @@ public class AuthorDao implements AuthorDaoStrategy, Serializable {
 //        //Author a = dao.findAuthorByPk("10");
 //        //system.out.println(a);
 //        
-       dao.updateAuthor("25", "jaz aids");
+        dao.updateAuthor("25", "jaz aids");
     }
 }

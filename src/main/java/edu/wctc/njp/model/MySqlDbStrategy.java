@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import javax.sql.DataSource;
 
 /**
  *
@@ -28,13 +29,14 @@ import java.util.StringJoiner;
 public class MySqlDbStrategy implements DbStrategy, Serializable {
 
     private Connection conn;
-    
+
     private String UrlErrorMsg = "Error: url is null or zero length";
 
     /**
-     *  Opens the SQL database connection.
-     * 
-     * @param driverClassName Driver class name for connection. Must not be null.
+     * Opens the SQL database connection.
+     *
+     * @param driverClassName Driver class name for connection. 
+     *                        Must not be null.
      * @param url URL used for connection. Must not be null.
      * @param username Username used for connection. Must not be null.
      * @param password Password used for connection. Must not be null.
@@ -43,9 +45,9 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
      * @throws SQLException
      */
     @Override
-    public void openConnection(String driverClassName, String url, String username, String password)
+    public final void openConnection(String driverClassName, String url, String username, String password)
             throws IllegalArgumentException, ClassNotFoundException, SQLException {
-        
+
         if (url == null || url.length() == 0) {
             throw new IllegalArgumentException(UrlErrorMsg);
         }
@@ -55,19 +57,28 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         conn = DriverManager.getConnection(url, username, password);
     }
 
+    @Override
+    public final void openConnection(DataSource ds) throws SQLException {
+        try {
+            conn = ds.getConnection();
+        } catch (SQLException ex) {
+            throw new SQLException(ex.getMessage(), ex.getCause());
+        }
+    }
+
     /**
      * Closes the SQL database connection.
-     * 
+     *
      * @throws SQLException
      */
     @Override
-    public void closeConnection() throws SQLException {
+    public final void closeConnection() throws SQLException {
         conn.close();
     }
 
     /**
      * Creates a database record.
-     * 
+     *
      * @param tableName The database table where the record is being created.
      * @param colNames The tables column names used for creating the record.
      * @param colVals The values for each of the tables columns.
@@ -177,10 +188,11 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
     }
 
     /**
+     * Finds all records and returns a list.
      *
-     * @param tableName
-     * @param maxRecords
-     * @return
+     * @param tableName Name of the desired table
+     * @param maxRecords Max limit of records returned.
+     * @return List of records.
      * @throws SQLException
      */
     @Override
@@ -236,10 +248,6 @@ public class MySqlDbStrategy implements DbStrategy, Serializable {
         return stmt;
     }
 
-    
-    
-    
-    
     //
     //
     //

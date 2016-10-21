@@ -14,15 +14,19 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href="main.css" rel="stylesheet" type="text/css"/>
         <title>Find Author</title>
+        
     </head>
     <body>
+        <%
+            HttpSession sess = request.getSession();
+        %>
         <div class="container">
             <jsp:include page="timeHeader.jsp"/>
             <h1>Find Author by Id</h1>
             <div class="row">
                 <div class="col-lg-5">
                     <div class="well bs-component">
-                        <form class="form-horizontal" action="AuthorController?task=Find" method="post"><fieldset>
+                        <form class="form-horizontal" action="<%= response.encodeURL("AuthorController?task=Find") %>" method="post"><fieldset>
                                 <legend>Find Author</legend>
                                 <div class="form-group">
                                     <label class="col-lg-3 control-label" for="id">Author Id: </label>
@@ -41,8 +45,8 @@
             </div>
 
             <% 
-                Object author = request.getAttribute("author");
-                Object failed = request.getAttribute("failed");
+                Object author = sess.getAttribute("author");
+                Object failed = sess.getAttribute("failed");
                 if (author != null) { 
             %>
                 
@@ -58,7 +62,7 @@
                             <th></th>
                         </tr>
                         <tr>
-                        <form action="AuthorController?task=Edit" method="post">
+                        <form action="<%= response.encodeURL("AuthorController?task=Edit") %>" method="post">
                             <td name="id">${author.authorId}</td>
                             <td name="name">${author.authorName}</td>
                             <td name="date">${author.dateAdded}</td>
@@ -87,7 +91,7 @@
             %>
             
             </br>
-            <div ><a class="btn btn-primary" href="AuthorController?task=View">View All Authors</a></div>
+            <div ><a class="btn btn-primary" href="<%= response.encodeURL("AuthorController?task=View") %>">View All Authors</a></div>
         </div>
     </body>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
