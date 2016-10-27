@@ -28,6 +28,8 @@ import javax.sql.DataSource;
  */
 public class MySqlDbStrategy implements DbStrategy, Serializable {
 
+    private static final long serialVersionUID = 6987962562913661056L;
+
     private Connection conn;
 
     private String UrlErrorMsg = "Error: url is null or zero length";

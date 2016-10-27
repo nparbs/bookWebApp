@@ -13,11 +13,11 @@
 <%
     Object author = request.getAttribute("author");
     HttpSession sess = request.getSession();
-    if (sess != null) {
+    //if (sess != null) {
         if (author == null) {
-            response.sendRedirect(response.encodeURL("AuthorController?task=Edit"));
+            //response.sendRedirect("AuthorController?task=Edit");
         }
-    }
+    //}
 %>
 <html>
     <head>
@@ -41,7 +41,7 @@
                     <th></th>                       
                 </tr>               
                 <tr>
-                <form action="<%= response.encodeURL("AuthorController?task=Edit") %>" method="post">
+                <form action="AuthorController?task=Edit" method="post">
                     <td>${author.authorId}</td>
                     <td><input type="text" name="name" value="${author.authorName}" /></td>
                     <td name="date">${author.dateAdded}</td>
@@ -50,12 +50,12 @@
                     </td>
                 </form> 
                 <td>
-                    <form action="<%= response.encodeURL("AuthorController?task=Delete") %>" method="post">
+                    <form action=AuthorController?task=Delete" method="post">
                         <button class="btn btn-danger" name="id" type="submit" value=${author.authorId}>Delete</button>
                     </form>
                 </td>
                 <td>
-                    <a class="btn btn-danger"href="<%= response.encodeURL("AuthorController?task=View") %>">Cancel</a>
+                    <a class="btn btn-danger" href="AuthorController?task=View">Cancel</a>
                 </td>
                 </tr>
             </table>

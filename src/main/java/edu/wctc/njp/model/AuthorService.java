@@ -58,17 +58,7 @@ public class AuthorService implements Serializable{
     //
     //
     //
-//    public static void main(String[] args) throws Exception {
-//        AuthorDaoStrategy dao = new AuthorDao(new MySqlDbStrategy(), "com.mysql.jdbc.Driver", 
-//                "jdbc:mysql://localhost:3306/book?useSSL=false", "root", "admin");
-//        
-//        AuthorService service = new AuthorService(dao);
-//        //dao.createAuthor("jeff");
-//        
-//        service.updateAuthor("25", "work plz");
-//        List<Author> authors = service.getAuthorList();
-//        System.out.println(authors);
-//    }
+
 
 
     
