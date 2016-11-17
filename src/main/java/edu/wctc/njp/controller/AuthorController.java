@@ -5,6 +5,7 @@
  */
 package edu.wctc.njp.controller;
 
+import edu.wctc.njp.ejb.AuthorFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -17,11 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.wctc.njp.model.Author;
-import edu.wctc.njp.model.AuthorDao;
-import edu.wctc.njp.model.AuthorDaoStrategy;
-import edu.wctc.njp.model.AuthorService;
-import edu.wctc.njp.model.DbStrategy;
-import edu.wctc.njp.model.MySqlDbStrategy;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,31 +55,9 @@ public class AuthorController extends HttpServlet {
     private static final String EDIT = "Edit";
     private static final String DELETE = "Delete";
 
-    private String driverClass;
-    private String url;
-    private String userName;
-    private String password;
-
-    private String dbJndiName;
-
     private String email;
-
     @Inject
-    private AuthorService authSvc;
-
-    /**
-     * Configures and initiates the database connection.
-     */
-    private void configDbConnection() throws NamingException, SQLException {
-        if (dbJndiName == null) {
-            authSvc.getDao().initDao(driverClass, url, userName, password);
-        } else {
-            Context ctx = new InitialContext();
-            DataSource ds = (DataSource) ctx.lookup(dbJndiName);
-            authSvc.getDao().initDao(ds);
-
-        }
-    }
+    private AuthorFacade authSvc;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -111,7 +86,6 @@ public class AuthorController extends HttpServlet {
         }
 
         try {
-            configDbConnection();
 
             if (task == null) {
                 task = VIEW;
@@ -121,27 +95,37 @@ public class AuthorController extends HttpServlet {
 
             switch (task) {
                 case CREATE: {
-                    String name = request.getParameter(NAME);
-                    authSvc.createAuthor(name);
-                    RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
-                    view.forward(request, response);
+                    try {
+                        String name = request.getParameter(NAME);
+
+                        Author a = new Author();
+                        a.setAuthorName(name);
+                        a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+
+                        authSvc.create(a);
+
+                        RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
+                        view.forward(request, response);
+                    } catch (Exception e) {
+                    }
                     break;
                 }
                 case EDIT: {
-                    String id = request.getParameter(ID);
-                    String name = request.getParameter(NAME);
                     try {
-                        Author author = authSvc.findAuthorById(id);
+                        String id = request.getParameter(ID);
+                        String name = request.getParameter(NAME);
+
+                        Author author = authSvc.findById(id).get(0);
                         request.setAttribute(AUTHOR, author);
                         if (name != null) {
-                            authSvc.updateAuthor(id, name);
+                            authSvc.updateAuthorName(id, name);
+                            //authSvc.edit(author);
                             RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
                             view.forward(request, response);
                         } else if (name == null) {
                             //sess.setAttribute("editError", "Name must be at least 1 char");
-                        
-                        RequestDispatcher view = request.getRequestDispatcher(EDIT_PAGE);
-                        view.forward(request, response);
+                            RequestDispatcher view = request.getRequestDispatcher(EDIT_PAGE);
+                            view.forward(request, response);
                         }
                     } catch (Exception e) {
                     }
@@ -149,40 +133,47 @@ public class AuthorController extends HttpServlet {
                     break;
                 }
                 case DELETE: {
-                    String id = request.getParameter(ID);
-                    authSvc.deleteAuthor(id);
-                    List<Author> authorList = authSvc.getAuthorList();
-                    request.setAttribute(AUTHOR_LIST, authorList);
-                    RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
-                    view.forward(request, response);
+                    try {
+                        String id = request.getParameter(ID);
+
+                        authSvc.deleteById(id);
+
+                        List<Author> authorList = authSvc.findAll();
+                        request.setAttribute(AUTHOR_LIST, authorList);
+                        RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
+                        view.forward(request, response);
+                    } catch (Exception e) {
+                    }
                     break;
                 }
                 case FIND: {
                     String id = null;
                     try {
+
                         id = request.getParameter(ID);
-                        Author author = authSvc.findAuthorById(id);
+                        Author author = authSvc.findById(id).get(0);
                         request.setAttribute(AUTHOR, author);
-                        //sess.setAttribute(AUTHOR, author);
+
+                        RequestDispatcher view = request.getRequestDispatcher(FIND_PAGE);
+                        view.forward(request, response);
                     } catch (Exception e) {
                         if (id != null) {
                             request.setAttribute("failed", e);
                         }
                     }
-                    RequestDispatcher view = request.getRequestDispatcher(FIND_PAGE);
-                    view.forward(request, response);
                     break;
                 }
                 case VIEW: {
-                    List<Author> authorList = authSvc.getAuthorList();
-                    request.setAttribute(AUTHOR_LIST, authorList);
-                    RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
-                    view.forward(request, response);
+                    try {
+                        List<Author> authorList = authSvc.findAll();
+                        request.setAttribute(AUTHOR_LIST, authorList);
+                        RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
+                        view.forward(request, response);
+                    } catch (Exception e) {
+                    }
                     break;
                 }
                 default:
-                    List<Author> authorList = authSvc.getAuthorList();
-                    request.setAttribute(AUTHOR_LIST, authorList);
                     RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
                     view.forward(request, response);
                     //response.sendRedirect(dest);
@@ -206,14 +197,7 @@ public class AuthorController extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-        driverClass = getServletContext().getInitParameter("db.driver.class");
-        url = getServletContext().getInitParameter("db.url");
-        userName = getServletContext().getInitParameter("db.username");
-        password = getServletContext().getInitParameter("db.password");
 
-        dbJndiName = getServletContext().getInitParameter("db.jndi.name");
-
-        email = getServletContext().getInitParameter("webmaster-email");
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

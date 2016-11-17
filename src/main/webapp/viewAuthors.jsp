@@ -61,7 +61,16 @@
                 </table>
 
                 <div class="col-lg-5">
-                    <div style="margin-bottom: 25px;" ><a href="AuthorController?task=Find" class="btn btn-primary">Find author</a></div>
+                    <form action="AuthorController?task=Find" method="post">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label" for="id">Author Id:</label>
+                            <div class="col-lg-5">
+                                <input type="text" name="id"/>
+                            </div>
+                        </div>
+                        <br>
+                        <div style="margin: 25px;"><button type="submit" class="btn btn-primary">Find Author</button></div>
+                    </form>
                 </div>
             </div>
             <div class="row">

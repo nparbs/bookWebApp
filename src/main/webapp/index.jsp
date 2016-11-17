@@ -17,10 +17,13 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div style="margin:15px;">
-                        <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=View") %> >View all authors</a>
+                        <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=View")%> >View all authors</a>
                     </div>
                     <div style="margin:15px;">
-                        <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=Find") %> >Find author</a>
+                        <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=Find")%> >Find author</a>
+                    </div>
+                    <div style="margin:15px;">
+                        <a class="btn btn-info" href=<%= response.encodeURL("BookController")%> >View All Books</a>
                     </div>
                 </div>
             </div>
