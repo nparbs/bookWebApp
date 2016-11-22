@@ -5,7 +5,6 @@
  */
 package edu.wctc.njp.controller;
 
-import edu.wctc.njp.ejb.AuthorFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.wctc.njp.model.Author;
+import edu.wctc.njp.service.AuthorService;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -30,6 +30,8 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The controller for all author methods.
@@ -56,8 +58,9 @@ public class AuthorController extends HttpServlet {
     private static final String DELETE = "Delete";
 
     private String email;
-    @Inject
-    private AuthorFacade authSvc;
+
+    
+    private AuthorService authSvc;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -102,7 +105,7 @@ public class AuthorController extends HttpServlet {
                         a.setAuthorName(name);
                         a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
 
-                        authSvc.create(a);
+                        authSvc.edit(a);
 
                         RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
                         view.forward(request, response);
@@ -115,11 +118,12 @@ public class AuthorController extends HttpServlet {
                         String id = request.getParameter(ID);
                         String name = request.getParameter(NAME);
 
-                        Author author = authSvc.findById(id).get(0);
+                        Author author = authSvc.findById(id);
                         request.setAttribute(AUTHOR, author);
                         if (name != null) {
-                            authSvc.updateAuthorName(id, name);
-                            //authSvc.edit(author);
+                            //authSvc.updateAuthorName(id, name);
+                            author.setAuthorName(name);
+                            authSvc.edit(author);
                             RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
                             view.forward(request, response);
                         } else if (name == null) {
@@ -136,7 +140,7 @@ public class AuthorController extends HttpServlet {
                     try {
                         String id = request.getParameter(ID);
 
-                        authSvc.deleteById(id);
+                        authSvc.remove(authSvc.findById(id));
 
                         List<Author> authorList = authSvc.findAll();
                         request.setAttribute(AUTHOR_LIST, authorList);
@@ -151,7 +155,7 @@ public class AuthorController extends HttpServlet {
                     try {
 
                         id = request.getParameter(ID);
-                        Author author = authSvc.findById(id).get(0);
+                        Author author = authSvc.findById(id);
                         request.setAttribute(AUTHOR, author);
 
                         RequestDispatcher view = request.getRequestDispatcher(FIND_PAGE);
@@ -190,15 +194,7 @@ public class AuthorController extends HttpServlet {
         //view.forward(request, response);
     }
 
-    /**
-     * Initiates the database based on parameters set in the ServletContext
-     *
-     * @throws ServletException
-     */
-    @Override
-    public void init() throws ServletException {
 
-    }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -239,6 +235,20 @@ public class AuthorController extends HttpServlet {
             Logger.getLogger(AuthorController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Initiates the database based on parameters set in the ServletContext
+     *
+     * @throws ServletException
+     */
+    @Override
+    public void init() throws ServletException {
+                ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        authSvc = (AuthorService) ctx.getBean("authorService");
+
     }
 
     /**

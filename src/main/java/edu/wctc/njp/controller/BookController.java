@@ -5,10 +5,11 @@
  */
 package edu.wctc.njp.controller;
 
-import edu.wctc.njp.ejb.AuthorFacade;
-import edu.wctc.njp.ejb.BookFacade;
+
 import edu.wctc.njp.model.Author;
 import edu.wctc.njp.model.Book;
+import edu.wctc.njp.service.AuthorService;
+import edu.wctc.njp.service.BookService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -53,10 +56,10 @@ public class BookController extends HttpServlet {
     private static final String EDIT = "Edit";
     private static final String DELETE = "Delete";
 
-    @Inject
-    private AuthorFacade authSvc;
-    @Inject
-    private BookFacade bookSvc;
+    //@Inject
+    private AuthorService authSvc;
+    //@Inject
+    private BookService bookSvc;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -95,32 +98,33 @@ public class BookController extends HttpServlet {
 
                         String title = request.getParameter(TITLE);
                         String isbn = request.getParameter(ISBN);
-                        String authorName = request.getParameter(AUTHOR_NAME);
-
-                        if (title != null && isbn != null && authorName != null) {
+                        //String authorName = request.getParameter(AUTHOR_NAME);
+                        String authorId = request.getParameter(AUTHOR_NAME);
+                        
+                        if (title != null && isbn != null && authorId != null) {
 
                             //Author a = authSvc.find(new Integer(authorId));
                             Author auth = null;
 
-                            if (authSvc.findByName(authorName).isEmpty()) {
+                            //if (authSvc.findById(ID).isEmpty()) {
 
 //                                Book b = new Book();
 //                                b.setTitle("it worked");
 //                                b.setIsbn(isbn);
 //                                b.setAuthorId(auth);
 //                                bookSvc.create(b);
-                                Author a = new Author();
+                                //Author a = new Author();
 
-                                a.setAuthorName(authorName);
-                                a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-                                authSvc.create(a);
+                                //a.setAuthorName(authorName);
+                                //a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                                //authSvc.edit(a);
 
-                            } else {
+                            //} else {
                                 //auth = authSvc.findByName(authorName).get(0);
 
-                            }
+                            //}
 
-                            auth = authSvc.findByName(authorName).get(0);
+                            auth = authSvc.findById(ID);
 
                             Book b = new Book();
 
@@ -128,7 +132,7 @@ public class BookController extends HttpServlet {
                             b.setIsbn(isbn);
                             b.setAuthorId(auth);
 
-                            bookSvc.create(b);
+                            bookSvc.edit(b);
 
                             //Set<Book> bookSet = (Set<Book>) auth.getBookCollection();
                             //bookSet.add(b);
@@ -152,12 +156,12 @@ public class BookController extends HttpServlet {
                         String authorId = request.getParameter(AUTHOR_ID);
                         //String authorName = request.getParameter(AUTHOR_NAME);
 
-                        Book book = bookSvc.find(new Integer(id));
+                        Book book = bookSvc.findById(id);
 
                         request.setAttribute(BOOK, book);
 
                         if (title != null && isbn != null && authorId != null) {
-                            Author author = authSvc.find(new Integer(authorId));
+                            Author author = authSvc.findById(authorId);
 
                             book.setTitle(title);
                             book.setIsbn(isbn);
@@ -188,7 +192,7 @@ public class BookController extends HttpServlet {
                     try {
                         String id = request.getParameter(ID);
 
-                        bookSvc.deleteById(id);
+                        bookSvc.remove(bookSvc.findById(id));
 
                         request.setAttribute(BOOK_LIST, bookSvc.findAll());
                         RequestDispatcher view = request.getRequestDispatcher(VIEW_BOOKS);
@@ -203,7 +207,7 @@ public class BookController extends HttpServlet {
 
                         id = request.getParameter(ID);
                         List<Book> bookList = new ArrayList();
-                        bookList.add(bookSvc.find(new Integer(id)));
+                        bookList.add(bookSvc.findById(id));
                         request.setAttribute(BOOK_LIST, bookList);
 
                         RequestDispatcher view = request.getRequestDispatcher(VIEW_BOOKS);
@@ -272,6 +276,16 @@ public class BookController extends HttpServlet {
         processRequest(request, response);
     }
 
+        @Override
+    public void init() throws ServletException {
+        // Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        authSvc = (AuthorService) ctx.getBean("authorService");
+        bookSvc = (BookService) ctx.getBean("bookService");
+    }
+    
     /**
      * Returns a short description of the servlet.
      *
