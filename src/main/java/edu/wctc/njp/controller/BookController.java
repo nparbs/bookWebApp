@@ -5,7 +5,6 @@
  */
 package edu.wctc.njp.controller;
 
-
 import edu.wctc.njp.model.Author;
 import edu.wctc.njp.model.Book;
 import edu.wctc.njp.service.AuthorService;
@@ -29,6 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import sun.rmi.runtime.Log;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,9 +40,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "BookController", urlPatterns = {"/BookController"})
 public class BookController extends HttpServlet {
 
+    private transient final Logger LOG = LoggerFactory.getLogger(BookController.class);
+
     private static final String VIEW_ALL_AUTHORS = "viewAuthors.jsp";
     private static final String VIEW_BOOKS = "viewBooks.jsp";
     private static final String EDIT_PAGE = "editBook.jsp";
+    private static final String REPORT_PAGE = "bookReport.jsp";
 
     private static final String TASK = "task";
     private static final String ID = "id";
@@ -55,6 +61,7 @@ public class BookController extends HttpServlet {
     private static final String FIND = "Find";
     private static final String EDIT = "Edit";
     private static final String DELETE = "Delete";
+    private static final String SEARCH = "Search";
 
     //@Inject
     private AuthorService authSvc;
@@ -98,33 +105,24 @@ public class BookController extends HttpServlet {
 
                         String title = request.getParameter(TITLE);
                         String isbn = request.getParameter(ISBN);
-                        //String authorName = request.getParameter(AUTHOR_NAME);
+                        String authorName = request.getParameter(AUTHOR_NAME);
                         String authorId = request.getParameter(AUTHOR_NAME);
-                        
+
                         if (title != null && isbn != null && authorId != null) {
 
                             //Author a = authSvc.find(new Integer(authorId));
                             Author auth = null;
 
-                            //if (authSvc.findById(ID).isEmpty()) {
-
-//                                Book b = new Book();
-//                                b.setTitle("it worked");
-//                                b.setIsbn(isbn);
-//                                b.setAuthorId(auth);
-//                                bookSvc.create(b);
-                                //Author a = new Author();
-
-                                //a.setAuthorName(authorName);
-                                //a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-                                //authSvc.edit(a);
-
-                            //} else {
-                                //auth = authSvc.findByName(authorName).get(0);
-
-                            //}
-
-                            auth = authSvc.findById(ID);
+                            if (authSvc.findByName(authorName) == null) {
+                                Author a = new Author();
+                                a.setAuthorName(authorName);
+                                a.setDateAdded(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                                authSvc.edit(a);
+                                auth = a;
+                            } else {
+                                auth = authSvc.findByName(authorName);
+                            }
+                            //auth = authSvc.findById(AUTHOR_ID);
 
                             Book b = new Book();
 
@@ -173,7 +171,6 @@ public class BookController extends HttpServlet {
                             //Set<Book> bookSet = (Set<Book>) author.getBookCollection();
                             //bookSet.add(book);
                             //author.setBookCollection(bookSet);
-
                             RequestDispatcher view = request.getRequestDispatcher(VIEW_BOOKS);
                             view.forward(request, response);
                             //} else if () {
@@ -231,6 +228,35 @@ public class BookController extends HttpServlet {
                     }
                     break;
                 }
+                case SEARCH: {
+                    try {
+                        List<Book> bookList = bookSvc.findAll();
+
+                        String title = request.getParameter("title");
+                        String id = request.getParameter("id");
+                        String authorName = request.getParameter("name");
+
+                        //if ((name == null || "".equals(name)) && (id == null || "".equals(id))) {
+                        //    authorList = authSvc.findAll();
+                        //} else 
+                        if ((title != null || !"".equals(title)) && (authorName == null || "".equals(authorName))) {
+                            bookList = bookSvc.findByLikeTitle(title);
+                        } else if ((authorName != null || !"".equals(authorName)) && (title == null || "".equals(title))) {
+                            bookList = bookSvc.findByLikeAuthorName(authorName);
+                        } else if ((authorName != null || !"".equals(authorName)) && (title != null || !"".equals(title))) {
+                            bookList = bookSvc.findByLikeAuthorNameAndLikeTitle(authorName, title);
+                        } else {
+                            bookList = bookSvc.findAll();
+                            request.setAttribute("Error", "Cannot retrieve Author");
+                        }
+
+                        request.setAttribute(BOOK_LIST, bookList);
+                        RequestDispatcher view = request.getRequestDispatcher(REPORT_PAGE);
+                        view.forward(request, response);
+                    } catch (Exception e) {
+                    }
+                    break;
+                }
                 default:
                     RequestDispatcher view = request.getRequestDispatcher(VIEW_BOOKS);
                     view.forward(request, response);
@@ -276,7 +302,7 @@ public class BookController extends HttpServlet {
         processRequest(request, response);
     }
 
-        @Override
+    @Override
     public void init() throws ServletException {
         // Ask Spring for object to inject
         ServletContext sctx = getServletContext();
@@ -285,7 +311,7 @@ public class BookController extends HttpServlet {
         authSvc = (AuthorService) ctx.getBean("authorService");
         bookSvc = (BookService) ctx.getBean("bookService");
     }
-    
+
     /**
      * Returns a short description of the servlet.
      *

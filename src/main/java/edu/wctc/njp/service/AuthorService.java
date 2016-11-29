@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
  * tell Spring to translate any exception messages into more user friendly text.
  * Any class annotated that way will do that.
  *
- * @author jlombardo
  */
 @Repository
 @Transactional(readOnly = true)
@@ -63,6 +62,17 @@ public class AuthorService {
     public Author findById(String id) {
         return authorRepo.findOne(new Integer(id));
     }
+        public Author findByName(String name) {
+        return authorRepo.findByName(name);
+    }
+    
+    public List<Author> findByLikeName(String name) {
+        return authorRepo.findByLikeName(name);
+    }
+    
+    public List<Author> findBetweenDates(String startDate, String endDate) {
+        return authorRepo.findBetweenDates(startDate, endDate);
+    }
 
     /**
      * Spring performs a transaction with readonly=false. This guarantees a
@@ -85,5 +95,8 @@ public class AuthorService {
     @Transactional
     public Author edit(Author author) {
         return authorRepo.saveAndFlush(author);
+        //return authorRepo.
     }
+    
+ //   public Author 
 }

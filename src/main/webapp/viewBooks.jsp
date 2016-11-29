@@ -45,20 +45,20 @@
                     </tr>
                     <c:forEach var="book" items="${bookList}">
                         <tr>
-                        <form name="${book.bookId}" action="BookController?task=Edit" method="post">
-                            <td name="id">${book.bookId}</td>
-                            <td name="name">${book.title}</td>
-                            <td name="date">${book.isbn}</td>
-                            <td name="author">${book.authorId.authorName} - ID: ${book.authorId.authorId}</td>
+                            <td>${book.bookId}</td>
+                            <td>${book.title}</td>
+                            <td>${book.isbn}</td>
+                            <td>${book.authorId.authorName} - ID: ${book.authorId.authorId}</td>
                             <td>
-                                <button class="btn btn-info" name="id" type="submit" value=${book.bookId}>Edit</button>
+                                <form action="BookController?task=Edit" method="post">
+                                    <button class="btn btn-info" name="id" type="submit" value="${book.bookId}">Edit</button>
+                                </form>
                             </td>
-                        </form>
-                        <td>
-                            <form action="BookController?task=Delete" method="post">
-                                <button class="btn btn-danger" name="id" type="submit" value=${book.bookId}>Delete</button>
-                            </form>
-                        </td>
+                            <td>
+                                <form action="BookController?task=Delete" method="post">
+                                    <button class="btn btn-danger" name="id" type="submit" value="${book.bookId}">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     </c:forEach>
                 </table>

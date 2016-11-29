@@ -25,6 +25,12 @@
                     <div style="margin:15px;">
                         <a class="btn btn-info" href=<%= response.encodeURL("BookController")%> >View All Books</a>
                     </div>
+                    <div style="margin:15px;">
+                        <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=Search")%> >Search Authors</a>
+                    </div>
+                    <div style="margin:15px;">
+                        <a class="btn btn-info" href=<%= response.encodeURL("BookController?task=Search")%> >Search Books</a>
+                    </div>
                 </div>
             </div>
         </div>

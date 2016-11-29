@@ -6,12 +6,12 @@
 
 <div class="row">
 
-    <div class="col-lg-4">
+    <div class="col-md-4">
         <div class="well" style="float:left;">
             <h3>Book Web App</h3>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-md-4">
         <div class="well" style="text-align: center;">
             <div style="margin:10px;">
                 <a class="btn btn-info" href=<%= response.encodeURL("AuthorController?task=View")%> >View all authors</a>

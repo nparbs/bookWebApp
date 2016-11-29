@@ -44,6 +44,7 @@ public class AuthorController extends HttpServlet {
     private static final String VIEW_ALL_PAGE = "viewAuthors.jsp";
     private static final String EDIT_PAGE = "editAuthor.jsp";
     private static final String FIND_PAGE = "findAuthor.jsp";
+    private static final String REPORT_PAGE = "authorReport.jsp";
 
     private static final String TASK = "task";
     private static final String ID = "id";
@@ -56,10 +57,10 @@ public class AuthorController extends HttpServlet {
     private static final String FIND = "Find";
     private static final String EDIT = "Edit";
     private static final String DELETE = "Delete";
+    private static final String SEARCH = "Search";
 
     private String email;
 
-    
     private AuthorService authSvc;
 
     /**
@@ -177,6 +178,37 @@ public class AuthorController extends HttpServlet {
                     }
                     break;
                 }
+                case SEARCH: {
+                    try {
+                        List<Author> authorList = new ArrayList();
+
+                        String name = request.getParameter("name");
+                        String id = request.getParameter("id");
+                        
+                        String startDate = request.getParameter("startDate");
+                        String endDate = request.getParameter("endDate");
+                        //Date start = Date.valueOf(id)
+                        
+                        //if ((name == null || "".equals(name)) && (id == null || "".equals(id))) {
+                        //    authorList = authSvc.findAll();
+                        //} else 
+                        if ((name != null || !"".equals(name)) && (id == null || "".equals(id))) {
+                            authorList = authSvc.findByLikeName(name);
+                        } else if ((name == null || "".equals(name)) && (id != null || !"".equals(id))) {
+                            authorList.add(authSvc.findById(id));
+                        } else if ((startDate != null || !"".equals(startDate)) && (endDate != null || !"".equals(endDate))) {
+                            authorList = authSvc.findBetweenDates(startDate, endDate);
+                        } else {
+                            authorList = authSvc.findAll();
+                            request.setAttribute("Error", "Cannot retrieve Author");
+                        }
+                        request.setAttribute(AUTHOR_LIST, authorList);
+                        RequestDispatcher view = request.getRequestDispatcher(REPORT_PAGE);
+                        view.forward(request, response);
+                    } catch (Exception e) {
+                    }
+                    break;
+                }
                 default:
                     RequestDispatcher view = request.getRequestDispatcher(VIEW_ALL_PAGE);
                     view.forward(request, response);
@@ -193,8 +225,6 @@ public class AuthorController extends HttpServlet {
         //RequestDispatcher view = request.getRequestDispatcher(response.encodeURL(dest));
         //view.forward(request, response);
     }
-
-
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -236,7 +266,7 @@ public class AuthorController extends HttpServlet {
                     .getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Initiates the database based on parameters set in the ServletContext
      *
@@ -244,7 +274,7 @@ public class AuthorController extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-                ServletContext sctx = getServletContext();
+        ServletContext sctx = getServletContext();
         WebApplicationContext ctx
                 = WebApplicationContextUtils.getWebApplicationContext(sctx);
         authSvc = (AuthorService) ctx.getBean("authorService");

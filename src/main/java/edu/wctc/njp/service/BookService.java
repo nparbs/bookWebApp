@@ -1,6 +1,5 @@
 package edu.wctc.njp.service;
 
-
 import edu.wctc.njp.model.Book;
 import edu.wctc.njp.repository.AuthorRepository;
 import edu.wctc.njp.repository.BookRepository;
@@ -12,44 +11,57 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This is a special Spring-enabled service class that delegates work to 
- * various Spring managed repository objects using special spring annotations
- * to perform dependency injection, and special annotations for transactions.
- * It also uses SLF4j to provide logging features.
- * 
- * Don't confuse the Spring @Respository annotation with the repository
- * classes (AuthorRepository, BookRespository). The annotation here is used 
- * solely to tell Spring to translate any exception messages into more
- * user friendly text. Any class annotated that way will do that.
- * 
- * @author jlombardo
+ * This is a special Spring-enabled service class that delegates work to various
+ * Spring managed repository objects using special spring annotations to perform
+ * dependency injection, and special annotations for transactions. It also uses
+ * SLF4j to provide logging features.
+ *
+ * Don't confuse the Spring @Respository annotation with the repository classes
+ * (AuthorRepository, BookRespository). The annotation here is used solely to
+ * tell Spring to translate any exception messages into more user friendly text.
+ * Any class annotated that way will do that.
+ *
  */
 @Repository
 @Transactional(readOnly = true)
 public class BookService {
+
     private transient final Logger LOG = LoggerFactory.getLogger(BookService.class);
-    
+
     @Autowired
     private BookRepository bookRepo;
-    
+
     @Autowired
     private AuthorRepository authorRepo;
 
     public BookService() {
     }
-    
+
     public List<Book> findAll() {
         return bookRepo.findAll();
     }
-    
+
     public Book findById(String id) {
         return bookRepo.findOne(new Integer(id));
     }
+
+    public List<Book> findByLikeTitle(String title) {
+        return bookRepo.findByLikeTitle(title);
+    }
     
+    public List<Book> findByLikeAuthorName(String authorName) {
+        return bookRepo.findByLikeAuthorName(authorName);
+    }
+    
+    public List<Book> findByLikeAuthorNameAndLikeTitle(String authorName, String title) {
+        return bookRepo.findByLikeAuthorNameAndLikeTitle(authorName, title);
+    }
+
     /**
-     * Spring performs a transaction with readonly=false. This
-     * guarantees a rollback if something goes wrong.
-     * @param book 
+     * Spring performs a transaction with readonly=false. This guarantees a
+     * rollback if something goes wrong.
+     *
+     * @param book
      */
     @Transactional
     public void remove(Book book) {
@@ -58,13 +70,14 @@ public class BookService {
     }
 
     /**
-     * Spring performs a transaction with readonly=false. This
-     * guarantees a rollback if something goes wrong.
-     * @param book 
+     * Spring performs a transaction with readonly=false. This guarantees a
+     * rollback if something goes wrong.
+     *
+     * @param book
      */
     @Transactional
     public Book edit(Book book) {
         return bookRepo.saveAndFlush(book);
     }
-    
+
 }
